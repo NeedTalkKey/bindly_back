@@ -13,9 +13,13 @@ const transporter = nodemailer.createTransport({
 
 export async function login_logic(req, res, next) {
   const { username, password } = req.body;
-  // username으로 계정 조회
-
-  // password 복호화 및 비교
+  try {
+    const login_user = userRepository.localLogin(req.body);
+    console.log(`login user : ${login_user}`);
+    return res.json({ status: true, data: login_user });
+  } catch (error) {
+    return res.json({ status: false, message: error.message });
+  }
 }
 
 export async function email_send(req, res, next) {
@@ -37,4 +41,15 @@ export async function email_send(req, res, next) {
       console.log("이메일 전송 성공", info.response);
     }
   });
+}
+
+export async function user_regist(req, res, next) {
+  try {
+    console.log(`user_regist req.body : `, req.body);
+    new_user = userRepository.createLocalUser(req.body);
+    console.log(`new_user : ${new_user}`);
+    return res.json({ status: true, data: new_user });
+  } catch (error) {
+    return res.json({ status: false, message: error.message });
+  }
 }
