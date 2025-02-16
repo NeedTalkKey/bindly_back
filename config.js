@@ -7,6 +7,11 @@ function getEnvValueWithDefault(key, defaultValue = undefined) {
 }
 
 export const config = {
+  hosting: {
+    front_port: getEnvValueWithDefault("FRONT_PORT"),
+    back_port: getEnvValueWithDefault("BACK_PORT"),
+    model_port: getEnvValueWithDefault("MODEL_PORT"),
+  },
   db: {
     url: getEnvValueWithDefault("MONGO_URL"),
     db_name: getEnvValueWithDefault("DATABASE_NAME"),
@@ -15,5 +20,8 @@ export const config = {
     site: getEnvValueWithDefault("MAIL_SITE"),
     account: getEnvValueWithDefault("GMAIL_ACCOUNT"),
     password: getEnvValueWithDefault("GAMIL_PASSWORD"),
+  },
+  security: {
+    salt_round: getEnvValueWithDefault("SALT_ROUND"),
   },
 };
