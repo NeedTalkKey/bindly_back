@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
+import { config } from "../config.js";
 const { Schema, model } = mongoose;
 
 const UserSchema = new Schema(
@@ -12,6 +13,7 @@ const UserSchema = new Schema(
   {
     collection: "users",
     timestamps: true,
+    versionKey: false,
   }
 );
 
@@ -23,20 +25,21 @@ export default User;
 // ===========
 export async function createLocalUser({ username, password, email, nickname }) {
   try {
-    console.log(
-      `createLocalUser() param `,
-      username,
-      password,
-      email,
-      nickname
-    );
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       throw new Error("이미 존재하는 username 또는 email입니다.");
     }
-    const newUser = new User({ username, password, email, nickname });
+    const saltRounds = parseInt(config.security.salt_round);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+      email,
+      nickname,
+    });
     console.log("newUser: ", newUser);
     await newUser.save();
+    console.log("await newUser.save(); 뒤");
     return newUser;
   } catch (error) {
     throw error;
