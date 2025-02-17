@@ -28,3 +28,33 @@ const ChatSchema = new Schema({
 
 const Chat = model('Chat', ChatSchema);
 export default Chat;
+
+// ===========
+// 쿼리문 시작
+// ===========
+
+// CREATE (채팅 기록 생성)
+export async function createChat(chatData) {
+    // chatData: { user_id, user_model, title, messages: [] }
+    return await new Chat(chatData).save();
+}
+
+// READ (특정 채팅 조회: _id)
+export async function findChatById(chatId) {
+    return await Chat.findById(chatId);
+}
+
+// READ (특정 사용자 전체 채팅 조회)
+export async function findChatsByUserId(userId) {
+    return await Chat.find({ user_id: userId });
+}
+
+// UPDATE (채팅 기록 업데이트)
+export async function updateChat(chatId, updateData) {
+    return await Chat.findByIdAndUpdate(chatId, updateData, { new: true });
+}
+
+// DELETE (채팅 기록 삭제)
+export async function deleteChat(chatId) {
+    return await Chat.findByIdAndDelete(chatId);
+}
