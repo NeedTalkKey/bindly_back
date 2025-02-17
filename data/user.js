@@ -56,6 +56,15 @@ export async function getUserById(userId) {
   }
 }
 
+export async function findByUsername(username) {
+  try {
+    const user = await User.findOne({ username });
+    return user;
+  } catch (error) {
+    return undefined;
+  }
+}
+
 // 사용자 정보 업데이트 (예: 비밀번호, 닉네임 변경)
 export async function updateUser(userId, updateData) {
   try {

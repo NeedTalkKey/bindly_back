@@ -23,5 +23,6 @@ export const config = {
   },
   security: {
     salt_round: getEnvValueWithDefault("SALT_ROUND"),
+    jwt_secret_key: getEnvValueWithDefault("JWT_SECRET_KEY"),
   },
 };
