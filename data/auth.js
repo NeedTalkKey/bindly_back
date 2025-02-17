@@ -32,18 +32,22 @@ export async function createAuth(authData) {
 }
 
 // READ (특정 사용자의 인증 정보 조회)
-export async function findAuthByValid(username, auth_number) {
+export async function findAuthByUsernameAndExpireTime(username) {
   return await Auth.findOne({
     username,
-    auth_number,
-    expire_time: { $gt: now },
-    fail_cnt: { $lt: 5 },
+    expire_time: { $gt: new Date() },
+  }).sort({
+    createdAt: -1,
   });
 }
 
 // UPDATE (인증 정보 업데이트)
-export async function updateAuth(authId, updateData) {
-  return await Auth.findByIdAndUpdate(authId, updateData, { new: true });
+export async function failCntIncrease(objectId) {
+  return await Auth.findOneAndUpdate(
+    { _id: objectId },
+    { $inc: { fail_cnt: 1 } }, // $inc : 기존 fail_cnt 값에서 1 증가
+    { new: true } // 업데이트된 문서 반환
+  );
 }
 
 // DELETE (인증 정보 삭제)

@@ -1,32 +1,25 @@
 import jwt from "jsonwebtoken";
-import * as userRepository from "../data/user.js";
 import { config } from "../config.js";
-
-const AUTH_ERROR = { message: "인증에러" };
 
 export const isAuth = async (req, res, next) => {
   const authHeader = req.get("Authorization");
-  console.log(authHeader);
 
   if (!(authHeader && authHeader.startsWith("Bearer "))) {
-    console.log("헤더 에러");
-    return res.redirect("/auth/login");
+    return res.json({
+      status: false,
+      message: "jwt 토큰을 Header로 전달받지 못했습니다",
+    });
   }
 
   const token = authHeader.split(" ")[1];
 
   jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
     if (error) {
-      console.log("토큰 에러");
-      return res.status(401).json(AUTH_ERROR);
+      return res.json({
+        status: false,
+        message: "jwt 토큰이 올바르지 않습니다",
+      });
     }
-    console.log(decoded);
-    const user = await authRepository.findById(decoded.id);
-    if (!user) {
-      console.log("아이디 없음");
-      return res.status(401).json(AUTH_ERROR);
-    }
-    req.userId = user.id;
     next();
   });
 };
