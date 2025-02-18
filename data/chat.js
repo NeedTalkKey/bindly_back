@@ -3,8 +3,8 @@ const { Schema, model } = mongoose;
 
 // 메시지 쌍 스키마 (Chat 내에서 사용)
 const messagePairSchema = new Schema({
+  aiMessage: { type: String, required: true }, // AI 응답 메시지 (AI의 응답이 먼저이기 때문에 순서 변경경)
   userMessage: { type: String, required: true }, // 사용자 메시지
-  aiMessage: { type: String, required: true }, // AI 응답 메시지
   timestamp: { type: Date, default: Date.now },
 });
 
@@ -38,9 +38,14 @@ export default Chat;
 // ===========
 
 // CREATE (채팅 기록 생성)
-export async function createChat(chatData) {
-  // chatData: { user_id, user_model, title, messages: [] }
-  return await new Chat(chatData).save();
+export async function createChat({ user_id, user_model, title, messages = [] }) {
+  const chat = new Chat({
+    user_id,
+    user_model,
+    title: title || "",
+    messages,
+  });
+  return await chat.save();
 }
 
 // READ (특정 채팅 조회: _id)
@@ -49,13 +54,31 @@ export async function findChatById(chatId) {
 }
 
 // READ (특정 사용자 전체 채팅 조회)
-export async function findChatsByUserId(userId) {
-  return await Chat.find({ user_id: userId });
+export async function findChatsByUserId(user_id, user_model) {
+  return await Chat.find({ user_id, user_model }).select("title createdAt");
+}
+
+// ADD (기존 대화쌍에 대화 추가. AI의 응답이 먼저이기 때문)
+export async function addMessage(chatId, aiMessage, userMessage) {
+  const chat = await Chat.findById(chatId);
+  if (!chat) {
+    throw new Error("채팅 내역이 존재하지 않습니다.");
+  }
+  chat.messages.push({
+    aiMessage,
+    userMessage,
+    timestamp: new Date(),
+  });
+  return await chat.save();
 }
 
 // UPDATE (채팅 기록 업데이트)
-export async function updateChat(chatId, updateData) {
-  return await Chat.findByIdAndUpdate(chatId, updateData, { new: true });
+export async function updateTitle( chatId, newTitle ) {
+  return await Chat.findByIdAndUpdate(
+    chatId,
+    { $set: { title: newTitle }},
+    { new: true}
+  );
 }
 
 // DELETE (채팅 기록 삭제)
