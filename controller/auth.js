@@ -21,12 +21,20 @@ export async function login_logic(req, res, next) {
 }
 
 export async function username_dupl_chk(req, res, next) {
-  const { username } = req.body;
-  const existUser = userRepository.findByUsername(username);
-  if (existUser)
-    return res.json({ status: false, message: "이미 존재하는 아이디입니다" });
-  else return res.json({ status: true, message: "사용 가능한 아이디입니다" });
+  try {
+    const { username } = req.body;
+    console.log("username 중복체크 요청:", username);
+    const existUser = await userRepository.findByUsername(username);
+    if (existUser) {
+      return res.json({ status: false, message: "이미 존재하는 아이디입니다" });
+    } else {
+      return res.json({ status: true, message: "사용 가능한 아이디입니다" });
+    }
+  } catch (error) {
+    return res.json({ status: false, message: error.message });
+  }
 }
+
 
 export async function email_send(req, res, next) {
   // nodemailer 설정
