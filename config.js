@@ -25,4 +25,9 @@ export const config = {
     salt_round: getEnvValueWithDefault("SALT_ROUND"),
     jwt_secret_key: getEnvValueWithDefault("JWT_SECRET_KEY"),
   },
+  kakao: {
+    rest_api_key: getEnvValueWithDefault("REST_API_KEY"),
+    redirect_uri: getEnvValueWithDefault("REDIRECT_URI"),
+    front_redirect: getEnvValueWithDefault("FRONT_REDIRECT"),
+  },
 };
