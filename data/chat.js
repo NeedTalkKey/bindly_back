@@ -60,16 +60,11 @@ export async function findChatsByUserId(user_id, user_model) {
 
 // ADD (기존 대화쌍에 대화 추가. AI의 응답이 먼저이기 때문)
 export async function addMessage(chatId, aiMessage, userMessage) {
-  const chat = await Chat.findById(chatId);
-  if (!chat) {
-    throw new Error("채팅 내역이 존재하지 않습니다.");
-  }
-  chat.messages.push({
-    aiMessage,
-    userMessage,
-    timestamp: new Date(),
-  });
-  return await chat.save();
+  return await Chat.findByIdAndUpdate(
+    chatId,
+    { $push: { messages: { aiMessage, userMessage, timestamp: new Date() } } },
+    { new: true }
+  );
 }
 
 // UPDATE (채팅 기록 업데이트)
