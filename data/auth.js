@@ -15,6 +15,7 @@ const AuthSchema = new Schema(
   {
     collection: "auths",
     timestamps: true,
+    versionKey: false,
   }
 );
 
