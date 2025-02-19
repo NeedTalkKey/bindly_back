@@ -20,6 +20,8 @@ export const isAuth = async (req, res, next) => {
         message: "jwt 토큰이 올바르지 않습니다",
       });
     }
+    print("decoded", decoded);
+    req.payload = decoded;
     next();
   });
 };

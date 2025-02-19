@@ -3,9 +3,8 @@ const { Schema, model } = mongoose;
 
 // 메시지 쌍 스키마 (Chat 내에서 사용)
 const messagePairSchema = new Schema({
-  aiMessage: { type: String, required: true }, // AI 응답 메시지 (AI의 응답이 먼저이기 때문에 순서 변경경)
+  aiMessage: { type: String, required: true }, // AI 응답 메시지 (AI의 응답이 먼저이기 때문에 순서 변경)
   userMessage: { type: String, required: true }, // 사용자 메시지
-  timestamp: { type: Date, default: Date.now },
 });
 
 const ChatSchema = new Schema(
@@ -38,7 +37,12 @@ export default Chat;
 // ===========
 
 // CREATE (채팅 기록 생성)
-export async function createChat({ user_id, user_model, title, messages = [] }) {
+export async function createChat({
+  user_id,
+  user_model,
+  title,
+  messages = [],
+}) {
   const chat = new Chat({
     user_id,
     user_model,
@@ -54,7 +58,7 @@ export async function findChatById(chatId) {
 }
 
 // READ (특정 사용자 전체 채팅 조회)
-export async function findChatsByUserId(user_id, user_model) {
+export async function findChatListByUserId(user_id, user_model) {
   return await Chat.find({ user_id, user_model }).select("title createdAt");
 }
 
@@ -68,11 +72,11 @@ export async function addMessage(chatId, aiMessage, userMessage) {
 }
 
 // UPDATE (채팅 기록 업데이트)
-export async function updateTitle( chatId, newTitle ) {
+export async function updateTitle(chatId, newTitle) {
   return await Chat.findByIdAndUpdate(
     chatId,
-    { $set: { title: newTitle }},
-    { new: true}
+    { $set: { title: newTitle } },
+    { new: true }
   );
 }
 

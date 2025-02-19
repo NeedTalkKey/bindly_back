@@ -100,6 +100,7 @@ function getUserInfo(accessToken, res) {
       const payload = {
         objectId: exist_user._id,
         nickname: exist_user.nickname,
+        user_model: "Kakao",
       };
       const token = jwt.sign(payload, config.security.jwt_secret_key, {
         expiresIn: "1h",
