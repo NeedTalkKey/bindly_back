@@ -13,14 +13,14 @@ export const isAuth = async (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
 
-  jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
+  jwt.verify(token, config.security.jwt_secret_key, async (error, decoded) => {
     if (error) {
       return res.json({
         status: false,
         message: "jwt 토큰이 올바르지 않습니다",
       });
     }
-    print("decoded", decoded);
+    console.log("decoded", decoded);
     req.payload = decoded;
     next();
   });
