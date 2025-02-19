@@ -111,7 +111,7 @@ function getUserInfo(accessToken, res) {
           config.kakao.front_redirect
         }/?token=${token}&nickname=${encodeURIComponent(
           userInfo.kakao_account.profile.nickname
-        )}`
+        )}&user_model=Kakao`
       );
     });
   });
