@@ -14,7 +14,12 @@ export async function login_logic(req, res, next) {
     const token = jwt.sign(payload, config.security.jwt_secret_key, {
       expiresIn: "1h",
     });
-    return res.json({ status: true, token, nickname: login_user.nickname });
+    return res.json({
+      status: true,
+      token,
+      nickname: login_user.nickname,
+      user_model: "User",
+    });
   } catch (error) {
     return res.json({ status: false, message: error.message });
   }
@@ -34,7 +39,6 @@ export async function username_dupl_chk(req, res, next) {
     return res.json({ status: false, message: error.message });
   }
 }
-
 
 export async function email_send(req, res, next) {
   // nodemailer 설정
