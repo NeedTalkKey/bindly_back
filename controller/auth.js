@@ -10,6 +10,7 @@ export async function login_logic(req, res, next) {
     const payload = {
       objectId: login_user._id,
       nickname: login_user.nickname,
+      user_model: "User",
     };
     const token = jwt.sign(payload, config.security.jwt_secret_key, {
       expiresIn: "1h",
