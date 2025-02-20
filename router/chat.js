@@ -5,7 +5,7 @@ import { isAuth } from "../middleware/jwt.js";
 const router = express.Router();
 
 router.post("/list", isAuth, chatController.findChatsByUserObjectId);
-router.post("/detail", isAuth);
-router.post("/create", isAuth);
+router.post("/detail", isAuth, chatController.findChatsDetailByChatObjectId);
+router.post("/create", isAuth, chatController.createChat);
 
 export default router;
