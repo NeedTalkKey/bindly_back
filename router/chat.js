@@ -7,5 +7,6 @@ const router = express.Router();
 router.post("/list", isAuth, chatController.findChatsByUserObjectId);
 router.post("/detail", isAuth, chatController.findChatsDetailByChatObjectId);
 router.post("/create", isAuth, chatController.createChat);
+router.post("/create", isAuth);
 
 export default router;
