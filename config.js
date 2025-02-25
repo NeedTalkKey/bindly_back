@@ -33,4 +33,7 @@ export const config = {
   huggingface: {
     apiToken: getEnvValueWithDefault("HF_API_TOKEN"),
   },
+  openapi: {
+    apiKey: getEnvValueWithDefault("OA_API_KEY"),
+  },
 };
