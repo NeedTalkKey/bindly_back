@@ -78,16 +78,28 @@ function normalizeKakaoText(text) {
   
   const outputGroups = [];
   const speakerFirstShown = {};
+  
+  // 기존 방식식
+  // groups.forEach(group => {
+  //   const shortName = speakerMap[group.speaker];
+  //   if (!speakerFirstShown[group.speaker]) {
+  //     // 기존: outputGroups.push(`[${shortName}] ${group.messages.join(" ")}`);
+  //     outputGroups.push(`${shortName}: ${group.messages.join(" ")}`);
+  //     speakerFirstShown[group.speaker] = true;
+  //   } else {
+  //     outputGroups.push(group.messages.join(" "));
+  //   }
+  // });
+
+    // 수정
   groups.forEach(group => {
     const shortName = speakerMap[group.speaker];
-    if (!speakerFirstShown[group.speaker]) {
-      outputGroups.push(`[${shortName}] ${group.messages.join(" ")}`);
-      speakerFirstShown[group.speaker] = true;
-    } else {
-      outputGroups.push(group.messages.join(" "));
-    }
+    group.messages.forEach(msgLine => {
+      // 화자가 바뀌든 아니든, 매 메시지마다 shortName: 메시지
+      outputGroups.push(`${shortName}: ${msgLine}`);
+    });
   });
-  
+
   const normalizedText = outputGroups.join("\n");
   
   return {
@@ -126,7 +138,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     
     // 모델 엔드포인트
     const relationshipModelUrl = 'https://api-inference.huggingface.co/models/kelly9457/bindly-R';
-    const intimacyModelUrl = 'http://127.0.0.1:8000/predict'; // FastAPI 통합 서버에서 /predict 제공
+    const intimacyModelUrl = `${config.hosting.host_ip}:${config.hosting.back_port}/predict`; // FastAPI 통합 서버에서 /predict 제공
     const token = config.hosting.apiToken || config.huggingface.apiToken;
     
     // 3) 관계 모델 청킹 – FastAPI 토큰화 엔드포인트 사용
@@ -232,7 +244,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     
     // 9) 최종 응답
     return res.json({
-      originalText: normalizedText,
+      normalizedText,
       speakerMapping,
       conversationMapping,
       predictedRelationship: predictedRelation,

@@ -11,6 +11,7 @@ export const config = {
     front_port: getEnvValueWithDefault("FRONT_PORT"),
     back_port: getEnvValueWithDefault("BACK_PORT"),
     model_port: getEnvValueWithDefault("MODEL_PORT"),
+    host_ip: getEnvValueWithDefault("HOST_IP")
   },
   db: {
     url: getEnvValueWithDefault("MONGO_URL"),

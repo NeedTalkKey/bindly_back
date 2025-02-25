@@ -8,6 +8,7 @@ import kakaoRouter from "./router/kakao.js";
 import chatRouter from "./router/chat.js";
 import analysisRouter from "./router/analysis.js";
 import feedbackRouter from "./router/feedback.js";
+import debugSentimentRouter from "./router/feedbackDebug.js";
 
 await connectDB();
 console.log("MongoDB 연결 성공");
@@ -21,6 +22,7 @@ app.use("/kakao", kakaoRouter);
 app.use("/chat", chatRouter);
 app.use("/analysis", analysisRouter);
 app.use("/feedback", feedbackRouter);
+app.use("/debug", debugSentimentRouter);
 
 app.use((req, res, next) => {
   res.sendStatus(404);
