@@ -1,6 +1,7 @@
 {
   "name": "bindly_back",
   "version": "1.0.0",
+  "type": "module",
   "description": "Bindly Back-end Develope",
   "main": "index.js",
   "scripts": {
@@ -24,6 +25,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.1",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.10.0"
   },
   "devDependencies": {
