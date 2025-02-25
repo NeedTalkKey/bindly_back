@@ -1,5 +1,5 @@
-# merged_fastapi.py
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import torch
 from transformers import AutoTokenizer, AutoConfig
@@ -7,6 +7,15 @@ import torch.nn as nn
 from transformers import BertPreTrainedModel, BertModel
 
 app = FastAPI(title="통합 FastAPI Inference 서버")
+
+# CORS 설정: 모든 출처, 메서드, 헤더 허용 (필요에 따라 조정)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 특정 도메인만 허용하려면 여기에 추가하세요.
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 ##############################
 # 1. 토큰화 및 청킹 엔드포인트
