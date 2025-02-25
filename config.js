@@ -30,4 +30,7 @@ export const config = {
     redirect_uri: getEnvValueWithDefault("REDIRECT_URI"),
     front_redirect: getEnvValueWithDefault("FRONT_REDIRECT"),
   },
+  huggingface: {
+    apiToken: getEnvValueWithDefault("HF_API_TOKEN"),
+  },
 };
