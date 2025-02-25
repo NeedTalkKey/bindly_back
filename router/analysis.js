@@ -139,6 +139,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     // 모델 엔드포인트
     const relationshipModelUrl = 'https://api-inference.huggingface.co/models/kelly9457/bindly-R';
     const intimacyModelUrl = `${config.hosting.host_ip}:${config.hosting.back_port}/predict`; // FastAPI 통합 서버에서 /predict 제공
+    console.log(intimacyModelUrl)
     const token = config.hosting.apiToken || config.huggingface.apiToken;
     
     // 3) 관계 모델 청킹 – FastAPI 토큰화 엔드포인트 사용
