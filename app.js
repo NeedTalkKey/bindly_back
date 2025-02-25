@@ -7,11 +7,7 @@ import authRouter from "./router/auth.js";
 import kakaoRouter from "./router/kakao.js";
 import chatRouter from "./router/chat.js";
 import analysisRouter from "./router/analysis.js";
-// import { initTokenizer } from "./tokenizerInit.js"; // ← 더 이상 필요 없음
-
-// Top-level await 사용 (ES module 환경에서)
-// await initTokenizer(); // ← 제거
-// console.log("Tokenizer 초기화 완료");
+import feedbackRouter from "./router/feedback.js";
 
 await connectDB();
 console.log("MongoDB 연결 성공");
@@ -24,6 +20,7 @@ app.use("/auth", authRouter);
 app.use("/kakao", kakaoRouter);
 app.use("/chat", chatRouter);
 app.use("/analysis", analysisRouter);
+app.use("/feedback", feedbackRouter);
 
 app.use((req, res, next) => {
   res.sendStatus(404);
