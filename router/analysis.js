@@ -138,7 +138,8 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     
     // 모델 엔드포인트
     const relationshipModelUrl = 'https://api-inference.huggingface.co/models/kelly9457/bindly-R';
-    const intimacyModelUrl = `${config.hosting.host_ip}:${config.hosting.model_port}/predict`; // FastAPI 통합 서버에서 /predict 제공
+    const intimacyModelUrl = 'http://127.0.0.1:8000/predict'; // FastAPI 통합 서버에서 /predict 제공
+    // const intimacyModelUrl = `${config.hosting.host_ip}:${config.hosting.model_port}/predict`; // FastAPI 통합 서버에서 /predict 제공
     console.log(intimacyModelUrl)
     const token = config.hosting.apiToken || config.huggingface.apiToken;
     

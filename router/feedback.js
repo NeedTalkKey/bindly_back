@@ -15,7 +15,6 @@ const hfSentimentModelUrl = "https://api-inference.huggingface.co/models/chihopa
 const hfToken = config.huggingface.apiToken || "";
 
 // OpenAI API 설정 (v4)
-// 실제 API 키, 모델 권한이 유효한지 반드시 확인!
 const openai = new OpenAI({
   apiKey: config.openapi.apiKey, // 예: process.env.OPENAI_API_KEY
 });
@@ -107,27 +106,46 @@ router.post("/feedback", async (req, res) => {
       return res.json({ message: "선택된 화자의 부정적인 문장이 없습니다." });
     }
 
-    // 5) OpenAI GPT-4 (또는 gpt-3.5-turbo)에 "공감"/"팩폭" 스타일로 문장 개선 요청
+    // 5) OpenAI GPT-4에 "공감"/"팩폭" 스타일로 문장 분석 및 개선(문제점+개선+변경) 요청
+    //    => 한 문장당 하나의 프롬프트로, 아래 형식으로 만들도록 지시
+    //    => [TOP n], 원문, 개선, 변경
+    //       개선: 문제점 및 개선 설명
+    //       변경: 실제 수정된 예시 문장
     const feedbackResults = [];
-    for (const neg of topNegative) {
-      const prompt =
-        feedbackStyle === "공감"
-          ? `다음 문장에 대하여 문제점과 개선점을 공감하는 어조로 부드럽게 순화시켜서 지적해줘. 반드시 원문과 다른 표현을 사용해줘. 개선된 문장의 예시는 출력하지마. 문장: "${neg.message}"`
-          : `다음 문장에 대하여 문제점과 개선점을 솔직한 어조로 강하고 직설적으로 지적해줘. 반드시 원문과 다른 표현을 사용해줘. 개선된 문장의 예시는 출력하지마. 문장: "${neg.message}"`;
+    for (let i = 0; i < topNegative.length; i++) {
+      const neg = topNegative[i];
+      const rank = i + 1; // TOP 1, TOP 2, TOP 3
+      const basePrompt = `
+[TOP ${rank}]
+원문: "${neg.message}"
+
+위 원문에 대해 다음 형식으로 답변해줘:
+1) "개선:" => 이 문장의 문제점 및 개선 방법을 ${
+        feedbackStyle === "공감" ? "부드럽게" : "직설적으로"
+      } 설명
+2) "변경:" => 문제점을 보완해 실제로 바꾼 문장 예시 (원문과 다른 표현 사용)
+
+조건:
+- 반드시 "원문"을 그대로 출력하지 말고, "개선:"과 "변경:"만 만들어.
+- "개선:"에는 문제점과 수정 방향을 ${
+        feedbackStyle === "공감" ? "공감하는 어조" : "팩폭 어조"
+      }로 작성
+- "변경:"에는 구체적인 예시 문장 하나를 제시
+- 원문의 어투(반말/존댓말)는 유지, 하지만 표현은 바꿔야 함
+- 최종 출력 형식은 예시:
+개선: ...
+변경: ...
+`;
 
       try {
-        // OpenAI API 호출 (주의: openai.chat.completions.create() 의 응답 구조)
         const completion = await openai.chat.completions.create({
           model: "gpt-4-turbo",
-          messages: [{ role: "user", content: prompt }],
+          messages: [{ role: "user", content: basePrompt }],
         });
 
-        // 디버그: 전체 응답 로그 출력
         console.log("OpenAI raw completion:", JSON.stringify(completion, null, 2));
 
-        // 여기서 completion은 곧바로 최상위에 choices가 존재할 것으로 보임
-        // (즉 completion.choices)
-        let improved;
+        let improvedText;
         if (
           completion &&
           completion.choices &&
@@ -135,28 +153,39 @@ router.post("/feedback", async (req, res) => {
           completion.choices[0].message &&
           completion.choices[0].message.content
         ) {
-          improved = completion.choices[0].message.content.trim();
+          improvedText = completion.choices[0].message.content.trim();
         } else {
           console.error("Invalid OpenAI response:", completion);
-          improved = "[오류로 인해 문장 개선 실패]";
+          improvedText = "[오류로 인해 문장 개선 실패]";
         }
 
+        // 최종 출력은 아래처럼:
+        // [TOP i]
+        // 원문: ...
+        // 개선: ...
+        // 변경: ...
+        // (improvedText가 '개선: ~\n변경: ~' 형태로 온다고 가정)
+        // -> 나중에 Chat.jsx에서 TOP/원문/개선/변경을 붙여서 하나의 문자열로 구성
+
         feedbackResults.push({
+          rank,
           original: neg.message,
-          improved,
+          improvedText,
           score: neg.score,
         });
       } catch (apiErr) {
         console.error("OpenAI API error:", apiErr);
         feedbackResults.push({
+          rank,
           original: neg.message,
-          improved: "[오류로 인해 문장 개선 실패]",
+          improvedText: "[오류로 인해 문장 개선 실패]",
           score: neg.score,
         });
       }
     }
 
-    // 6) 결과 반환
+    // 6) 결과를 JSON으로 반환:
+    //    front에서 "feedbackResults"를 받아, 각 항목을 원하는 형식으로 조립해 메시지화
     return res.json({ feedback: feedbackResults });
   } catch (error) {
     console.error("Feedback error:", error);
