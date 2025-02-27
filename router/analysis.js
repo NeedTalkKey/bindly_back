@@ -195,9 +195,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       })
     );
 
-    console.log("corpus : ", normalizedText);
-    console.log("speaker : ", speakerMapping);
-    const empathyMesurePromise = fetch(empathyModelUrl, {
+    const empathyMesurePromise = await fetch(empathyModelUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
