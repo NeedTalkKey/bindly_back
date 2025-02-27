@@ -1,4 +1,3 @@
-// router/feedback.js
 import express from "express";
 import fetch from "node-fetch";
 import { createRequire } from "module";
@@ -44,7 +43,7 @@ async function getSentimentScore(sentence) {
     const result = await response.json();
     // 모델 출력 예: [[ { label: "LABEL_0", score: 0.5864 }, { label: "LABEL_1", score: 0.4136 } ]]
     if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
-      const negativeItem = result[0].find(item => item.label === "LABEL_1");
+      const negativeItem = result[0].find((item) => item.label === "LABEL_1");
       return negativeItem ? negativeItem.score : 0;
     }
     return 0;
@@ -107,10 +106,6 @@ router.post("/feedback", async (req, res) => {
     }
 
     // 5) OpenAI GPT-4에 "공감"/"팩폭" 스타일로 문장 분석 및 개선(문제점+개선+변경) 요청
-    //    => 한 문장당 하나의 프롬프트로, 아래 형식으로 만들도록 지시
-    //    => [TOP n], 원문, 개선, 변경
-    //       개선: 문제점 및 개선 설명
-    //       변경: 실제 수정된 예시 문장
     const feedbackResults = [];
     for (let i = 0; i < topNegative.length; i++) {
       const neg = topNegative[i];
@@ -139,13 +134,13 @@ router.post("/feedback", async (req, res) => {
 
       try {
         const completion = await openai.chat.completions.create({
-          model: "gpt-4-turbo",
+          model: "gpt-4-turbo", // 실제 사용하시는 모델명으로 변경 가능 (ex: "gpt-3.5-turbo")
           messages: [{ role: "user", content: basePrompt }],
         });
 
         console.log("OpenAI raw completion:", JSON.stringify(completion, null, 2));
 
-        let improvedText;
+        let rawText;
         if (
           completion &&
           completion.choices &&
@@ -153,24 +148,27 @@ router.post("/feedback", async (req, res) => {
           completion.choices[0].message &&
           completion.choices[0].message.content
         ) {
-          improvedText = completion.choices[0].message.content.trim();
+          rawText = completion.choices[0].message.content.trim();
         } else {
           console.error("Invalid OpenAI response:", completion);
-          improvedText = "[오류로 인해 문장 개선 실패]";
+          rawText = "[오류로 인해 문장 개선 실패]";
         }
 
-        // 최종 출력은 아래처럼:
-        // [TOP i]
-        // 원문: ...
-        // 개선: ...
-        // 변경: ...
-        // (improvedText가 '개선: ~\n변경: ~' 형태로 온다고 가정)
-        // -> 나중에 Chat.jsx에서 TOP/원문/개선/변경을 붙여서 하나의 문자열로 구성
+        // === "개선:" 부분과 "변경:" 부분을 정규식으로 분리 ===
+        const improvedRegex = /개선:\s*(.+?)(?=변경:|$)/s;
+        const changedRegex = /변경:\s*(.+)/s;
+
+        const improvedMatch = rawText.match(improvedRegex);
+        const changedMatch = rawText.match(changedRegex);
+
+        const improvedTextOnly = improvedMatch ? improvedMatch[1].trim() : "";
+        const changedTextOnly = changedMatch ? changedMatch[1].trim() : "";
 
         feedbackResults.push({
           rank,
           original: neg.message,
-          improvedText,
+          improvedText: improvedTextOnly,
+          changedText: changedTextOnly,
           score: neg.score,
         });
       } catch (apiErr) {
@@ -179,13 +177,13 @@ router.post("/feedback", async (req, res) => {
           rank,
           original: neg.message,
           improvedText: "[오류로 인해 문장 개선 실패]",
+          changedText: "",
           score: neg.score,
         });
       }
     }
 
-    // 6) 결과를 JSON으로 반환:
-    //    front에서 "feedbackResults"를 받아, 각 항목을 원하는 형식으로 조립해 메시지화
+    // 6) 결과를 JSON으로 반환
     return res.json({ feedback: feedbackResults });
   } catch (error) {
     console.error("Feedback error:", error);
