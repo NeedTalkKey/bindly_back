@@ -1,5 +1,6 @@
 # Bindly Back
-
+<h2 align="center"> 
+<img src="https://github.com/user-attachments/assets/d7ee5fa0-d604-4e41-a4bd-5d05a97268fe" alt="long" border="0"></h2>
 Bindly 프로젝트의 백엔드 코드베이스입니다. 이 저장소는 Bindly 애플리케이션의 서버 측 로직을 구현하며, 사용자 요청을 처리하고 데이터베이스와 상호 작용하는 역할을 담당합니다.
 
 ## 🚀 프로젝트 개요
