@@ -1,4 +1,4 @@
-# Bindly Back
+# Bindly Backend
 <h2 align="center"> 
 <img src="https://github.com/user-attachments/assets/d7ee5fa0-d604-4e41-a4bd-5d05a97268fe" alt="long" border="0"></h2>
 Bindly 프로젝트의 백엔드 코드베이스입니다. 이 저장소는 Bindly 애플리케이션의 서버 측 로직을 구현하며, 사용자 요청을 처리하고 데이터베이스와 상호 작용하는 역할을 담당합니다.
@@ -50,4 +50,8 @@ npm start
 3. 변경 사항을 커밋합니다 (`git commit -m 'Add new feature'`).
 4. 브랜치에 푸시합니다 (`git push origin feature-branch`).
 5. 풀 리퀘스트를 생성합니다.
-
+---
+**Bindly** 프로젝트의 다른 Git도 둘러보세요!
+> 🐇 [Bindly Front-end](https://github.com/NeedTalkKey/bindly_front)
+> 
+> ⚡ [Bindly Fast-API](https://github.com/NeedTalkKey/bindly_fastapi)
