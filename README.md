@@ -13,6 +13,22 @@ Bindly Back은 다음과 같은 기능을 제공합니다:
 - 토큰 기반 인증 시스템
 - 미들웨어를 통한 요청 검증
 
+## 📡 API 목록표
+| API title                   | Method | 1st        | 2nd                   |
+|----------------------------|--------|------------|-----------------------|
+| 로그인하기                | post   | /auth      | /login                |
+| 이메일 인증번호 발송      | post   | /auth      | /send                 |
+| 이메일 인증번호 검증      | post   | /auth      | /verify-email         |
+| 회원가입                  | post   | /auth      | /signup               |
+| 아이디 중복검사           | post   | /auth      | /username-dupl-chk    |
+| 텍스트 분석               | post   | /analysis  | -                     |
+| 피드백 톡 리스트 조회     | get    | /chat      | /list                 |
+| 피드백 톡 내용 조회       | post   | /chat      | /read                 |
+| 피드백 톡 작성            | post   | /chat      | /create               |
+| 인가코드 받기 (redirectURI) | get    | /kakao     | /callback             |
+
+> 자세한 API 명세서는 [구글 공유 드라이브](https://drive.google.com/drive/folders/1U3F7XMk2j27VKxA5SLkQeIMc5FQZrKnR?usp=sharing)에서 보실 수 있습니다.
+
 ## 📂 디렉토리 구조
 ```
 📦 bindly_back
